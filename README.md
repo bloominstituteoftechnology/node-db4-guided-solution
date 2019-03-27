@@ -307,23 +307,36 @@ exports.down = function(knex, Promise) {
 
 ## Knex Seeding to add Data to Tables
 
-To create a seed type: `npx knex:seed 01-roles`. Numbering is a good idea because `knex` will not add a timestamp to the name like migrate does. Adding numbers to the file name we can control the order in which they run.
+To create a seed type: `npx knex seed:make 001-seedName`. Numbering is a good idea because `knex` will not add a timestamp to the name like migrate does. Adding numbers to the file name we can control the order in which they run.
 
-Add the following content to the generated seed file:
+In some Relational Database Management Systems it is not possible to delete records referenced by `foreign keys`. To deal with that we'll use an npm module called `knex-cleaner`. This module can empty all tables and reset all primary keys. We just need to guarantee that it runs before any other seed.
+
+- Add `knex-cleaner` as a development dependency: `yarn add knex-cleaner --dev`.
+- Add a new seed to clean all tables: `npx knex seed:make 00-cleanup`.
+- Add the following content to the generated seed file.
 
 ```js
+// ./seeds/00-cleanup.js
+const cleaner = require('knex-cleaner');
+
+exports.seed = function(knex) {
+  return cleaner.clean(knex); // cleans all tables and resets the primary keys
+};
+```
+
+- Add a new seed file for the `roles` table: `npx knex seed:make 001-roles`
+- add the following content to the generated seed file:
+
+```js
+// ./seeds/001-roles.js
 exports.seed = function(knex, Promise) {
-  // Deletes ALL existing entries
-  return knex('roles')
-    .truncate() // make sure to replace .del() with this, as this resets the ids and delete will not.
-    .then(function() {
-      // Inserts seed entries
-      return knex('roles').insert([
-        { name: 'student' },
-        { name: 'PM' },
-        { name: 'TA' },
-      ]);
-    });
+  // the 00-cleanup.js seed already deleted all records
+  // we just worry about seeding records in all other seeds
+  return knex('roles').insert([
+    { name: 'student' },
+    { name: 'PM' },
+    { name: 'TA' },
+  ]);
 };
 ```
 
