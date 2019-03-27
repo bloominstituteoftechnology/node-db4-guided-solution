@@ -174,7 +174,7 @@ Show the [Schema Builder section of the Knex documentation](https://knexjs.org/#
 
 Remove the database from `SQLite Studio` to release any possible locking of the file by the OS.
 
-Open the guided project built for the Web DB II module and **delete the database**. We'll re-create it using `Knex Migrations`. Check the folder using your OS file navigator to make sure the DB is gone.
+Open the starter project and **delete the database**. We'll re-create it using `Knex Migrations`. Check the folder using your OS file navigator to make sure the DB is gone.
 
 Explain what a migration is.
 
