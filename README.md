@@ -166,9 +166,7 @@ offset 2 -- explain how offset works
 
 **Take a break if it's a good time**
 
-Next, we'll move to JavaScript and learn about migrations and seeding.
-
-**Continue working on the guided project built the previous day**.
+Next, we'll move to the starter project use it to learn about migrations and seeding.
 
 ## Introduce Knex Migrations
 
