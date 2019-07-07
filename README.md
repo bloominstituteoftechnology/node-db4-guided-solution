@@ -32,11 +32,11 @@ Introduce the project for the afternoon. If they are done early, encourage them 
 
 ## Data Normalization
 
-Briefly review data normalization, redundancy, and anomalies in TK. 
+Review data normalization, redundancy, and anomalies in TK. 
 
 ## Foreign Keys
 
-Briefly foreign keys in TK. You may use [SQLTryIt](https://w3schools.com/Sql/tryit.asp?filename=trysql_select_top) as a visual tool as well.
+Review foreign keys in TK. You may use [SQLTryIt](https://w3schools.com/Sql/tryit.asp?filename=trysql_select_top) as a visual tool as well.
 
 ## Table Relationships
 
@@ -49,7 +49,8 @@ Paste the following requirements into `notes.md`:
 ```
 ### Problem
 A client has hired you to track zoo animals.
-For each animal, you must track that their name, species, and all zoos in which they have resided (including zoo name and address).
+For each animal, you must track that their name, species, 
+and all zoos in which they have resided (including zoo name and address).
 
 Determine the database tables necessary to track this information.
 Label any relationships between table.
