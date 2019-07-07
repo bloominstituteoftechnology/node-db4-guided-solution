@@ -3,12 +3,14 @@ exports.up = function(knex, Promise) {
   return knex.schema
     .createTable('zoos', tbl => {
       tbl.increments();
+      // two different zoos may have the same name
       tbl.string('zoo_name', 128)
         .notNullable();
       tbl.string('address', 128)
         .notNullable()
         .unique();
     })
+    // we can chain together createTable
     .createTable('species', tbl => {
       tbl.increments();
       tbl.string('species_name', 128);
@@ -16,6 +18,7 @@ exports.up = function(knex, Promise) {
     .createTable('animals', tbl => {
       tbl.increments();
       tbl.string('animal_name', 128);
+      // must come after species table is created
       tbl.integer('species_id')
         .unsigned()
         .notNullable()
@@ -39,6 +42,8 @@ exports.up = function(knex, Promise) {
         .inTable('animals')
         .onDelete('CASCADE')
         .onUpdate('CASCADE');
+      // the combination of the two keys becomes our primary key
+      // will enforce unique combinations of ids
       tbl.primary(['zoo_id', 'animal_id']);
     });
 };

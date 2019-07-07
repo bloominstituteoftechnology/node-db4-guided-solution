@@ -1,22 +1,34 @@
-Layers
+### Problem
 
-Client <> API < (query builder <> adapter) > data store.
+A client has hired you to track zoo animals.
+For each animal, you must track that their name, species, and all zoos in which they have resided (including zoo name and address).
 
-in JS we think like this { id, name, isActive }
+Determine the database tables necessary to track this information.
+Label any relationships between table.
 
-relational dbs think like this [ id, name, is_active ]
+### Solution
 
-we need to translate between Objects and Relations
+Tables: Zoos, Species, Animals
 
-we could use an ORM (Object Relational Mapper)
+Zoos <=> Animals : Many to many
+Species <=> Animals: 1 to many
 
-most ORMs include a Query Builder
+### Table Details
 
-a QB translates between a language (JS) and SQL statements
+Zoos:
+- id
+- zoo_name
+- address 
 
-result = {
-...project props
-actions: [ ...actionsHere]
-}
+Species:
+- id
+- species_name
 
-The relational model thinks in SETS
+Animals:
+- id
+- animal_name
+- species_id
+
+zoo_animals:
+- zoo_id
+- animal_id

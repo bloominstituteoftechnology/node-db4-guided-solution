@@ -30,316 +30,275 @@ When making changes to the `master` branch, commit the changes and use `git push
 
 Introduce the project for the afternoon. If they are done early, encourage them to study tomorrow's content and follow the tutorials on TK.
 
-## Use INNER JOIN to Query Data from Multiple Tables
+## Data Normalization
 
-Load [the w3schools query](https://www.w3schools.com/Sql/tryit.asp?filename=trysql_select_top) in a browser window.
+Briefly review data normalization, redundancy, and anomalies in TK. 
 
-Write a query to select all orders: `select * from orders`. Note the `CustomerID`, `EmployeeID`. A manager may not get much value out of this report. It's unlikely that managers know all employees or customers by their Ids.
+## Foreign Keys
 
-Load TK and introduce Joins and their use to query combined dat from multiple tables. Mention the different types and stress that `INNER JOIN` and `LEFT JOIN` are the most common. We'll see example of both.
+Briefly foreign keys in TK. You may use [SQLTryIt](https://w3schools.com/Sql/tryit.asp?filename=trysql_select_top) as a visual tool as well.
 
-First let's bring information about the `Customers` using the `CustomerID` field from the `Orders` table. Type and explain the following query:
+## Table Relationships
 
-```sql
--- we pick the columns we want from each table using dot notation like we do with objects
-select Customers.CustomerName, Customers.Country, Orders.OrderID, Orders.OrderDate
-from Orders
-inner join Customers on Orders.CustomerID = Customers.CustomerID
--- the order of the condition doesn't matter could be: Customers.CustomerID = Orders.CustomerID
+Review 1-to-1, 1-to-many, and many-to-many relationships in TK.
+
+### You Do (Estimated 5 minutes)
+
+Paste the following requirements into `notes.md`:
+
 ```
+### Problem
+A client has hired you to track zoo animals.
+For each animal, you must track that their name, species, and all zoos in which they have resided (including zoo name and address).
 
-**wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
-
-### You Do (estimated 3 minute to complete)
-
-Ask students to include the Employee's `FirstName` and `LastName` as by joining that preceding query to the `Employees` table.
+Determine the database tables necessary to track this information.
+Label any relationships between table.
+```
 
 Possible answer:
 
-```sql
--- we pick the columns we want from each table using dot notation like we do with objects
-select Customers.CustomerName, Customers.Country, Orders.OrderID, Orders.OrderDate,
-  Employees.FirstName, Employees.LastName
-from Orders
-inner join Customers on Orders.CustomerID = Customers.CustomerID
-inner join Employees on Orders.EmployeeID = Employees.EmployeeID
 ```
+### Solution
+Tables: Zoos, Species, Animals
+
+Zoos <=> Animals : Many to many
+Species <=> Animals: 1 to many
+```
+
+Discuss why Zoos <=> Animals must be many to many, versus if the requirements had called for tracking the current location of each animal.
 
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
 
-## Use LEFT JOIN
+### Schema Design
 
-Let's way we want to see all customers even if they don't have any orders. That is a good use case for a `LEFT JOIN`.
+Break down each the design of each table in `notes.md`
 
-```sql
--- we pick the columns we want from each table using dot notation like we do with objects
-select Customers.CustomerName, Customers.Country, Orders.* -- the * means all columns from orders
-from Customers left join Orders on Orders.CustomerID = Customers.CustomerID
--- the left table is the one following FROM in the query
+```
+### Tables
 
--- add the next 2 lines after running the code above to show left join with more tables
-  , Employees.FirstName, Employees.LastName -- note the comma at the beginning of the line
-left join Employees on Orders.EmployeeID = Employees.EmployeeID
+Zoos:
+- id
+- zoo_name
+- address 
 ```
 
-**wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
+Mention that we could choose to create a seperate address table with a 1 to 1 relationship with zoos, but unless we had some specific reason to, that is an unnecessary step.
 
-## Use || to Concatenate Strings
-
-Explain that some DBMS have a `concat` function, but SQLite uses `||`.
-
-```sql
--- we pick the columns we want from each table using dot notation like we do with objects
-select Customers.CustomerName, Customers.Country, Orders.*, (Employees.FirstName || ' ' || Employees.LastName) as SoldBy
-from Customers
-left join Orders on Orders.CustomerID = Customers.CustomerID
-left join Employees on Orders.EmployeeID = Employees.EmployeeID
 ```
+Species:
+- id
+- species_name
+
+Animals:
+- id
+- animal_name
+- species_id
+```
+
+There are many animals for one species. In a many-to-one relationship, the foreign key goes in the "many" table. Thus `species_id`, the foreign key, will link each animal to its species.
+
+Finally, we will need to link animals and zoos. Explore why we cannot have a `zoo_id` in `animals` nor can we have a `animal_id` in `zoos`. Instead, we'll need an intermediary table
+
+```
+zoo_animals:
+- zoo_id
+- animal_id
+```
+
+The naming convention for link tables in table1_table2plural. Mention that this type of table does not actually require its own id. We'll see why later. 
 
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
 
 **Take a break if it's a good time**
 
-## Use Table Name Aliases to Shorten Query
+## Multi Table Schemas in Knex
 
-Explain how to use the table name alias.
+We now want to build these tables using a knex migration. Confirm that our `knexfile` is setup properly. Then run: 
 
-```sql
--- we pick the columns we want from each table using dot notation like we do with objects
-select c.CustomerName, c.Country, o.*, (e.FirstName || ' ' || e.LastName) as SoldBy
-from Customers as c
-left join Orders as o on o.CustomerID = c.CustomerID
-left join Employees as e on o.EmployeeID = e.EmployeeID
+`knex migrate:make create-tables`
+
+We can create all tables in the same knex file. Start with `zoos` and `species`
+
+```js
+exports.up = function(knex, Promise) {
+  return knex.schema
+    .createTable('zoos', tbl => {
+      tbl.increments();
+      // two different zoos may have the same name
+      tbl.string('zoo_name', 128)
+        .notNullable();
+      tbl.string('address', 128)
+        .notNullable()
+        .unique();
+    })
+    // we can chain together createTable
+    .createTable('species', tbl => {
+      tbl.increments();
+      tbl.string('species_name', 128);
+    })
+};
 ```
+
+Now let's add a table with a foreign key
+
+```js
+.createTable('species', tbl => {
+  tbl.increments();
+  tbl.string('species_name', 128);
+})
+.createTable('animals', tbl => {
+  tbl.increments();
+  tbl.string('animal_name', 128);
+  tbl.integer('species_id')
+    // forces integer to be positive
+    .unsigned()
+    .notNullable()
+    .references('id')
+    // this table must exist already
+    .inTable('species')
+})   
+```
+
+Finally, let's add the intermediary table for our many-to-many relationship
+
+```js
+.createTable('zoo_animals', tbl => {
+  tbl.integer('zoo_id')
+    .unsigned()
+    .notNullable()
+    .references('id')
+    // this table must exist already
+    .inTable('zoos')
+  tbl.integer('animal_id')
+    .unsigned()
+    .notNullable()
+    .references('id')
+    // this table must exist already
+    .inTable('animals')
+  // the combination of the two keys becomes our primary key
+  // will enforce unique combinations of ids
+  tbl.primary(['zoo_id', 'animal_id']);
+});
+```
+
+Explain that two columns can be a primary key, as long as the combinations are unique. This is a common practice in an intermediary table.
 
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
 
-## Use GROUP BY with Aggregate Functions and LIMIT
+### YOU DO (Estimated 3 minutes)
 
-Introduce `GROUP BY` and aggregate functions like `SUM`, `AVG` and `COUNT`.
-
-Let's write a query to list the number of items ordered for each order organized by the number of items descending to show the larger orders at the top.
-
-```sql
-select o.OrderID, count(*) as ItemsOrderedCount
-from Orders as o inner join OrderDetails as od on o.OrderID = od.OrderID
-
-group by o.OrderID -- goes before the order by and after any WHERE, order matters
-order by ItemsOrderedCount desc -- goes after the group by
-
--- to only show the top 5 orders by number of items ordered add the next line
-limit 5 -- explain what limit is doing here
-```
-
-**wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
-
-## You Do (estimated 5 minutes to complete)
-
-Ask students to list the top 5 selling products based on the number of items sold. Include the `ProductName` and the number of items sold.
+Write a `down` function.
 
 Possible solution:
 
-```sql
-select p.ProductName, count(*) as Sold
-from Products as p
-inner join OrderDetails as od on p.ProductID = od.ProductID
-group by ProductName
-order by Sold desc
-limit 5
+```js
+exports.down = function(knex, Promise) {
+  // drop in the opposite order
+  return knex.schema
+    .dropTableIfExists('zoo_animals')
+    .dropTableIfExists('animals')
+    .dropTableIfExists('species')
+    .dropTableIfExists('zoos');
+};
 ```
 
-## Use SUM and OFFSET
+Note that tables must be dropped in reverse order.
 
-Let's see the **revenue by product** to bring several concepts together. Navigate through the tables to find the `quantity` and `price` columns. They are in the `Products` and `OrderDetails` tables.
+Run `knex migrate:latest` to assure there are no typos. 
 
-```sql
-select p.ProductName, sum(od.Quantity * p.Price) as Revenue
-from Products as p
-inner join OrderDetails as od on p.ProductID = od.ProductID
-group by ProductName
-order by Revenue desc
-limit 5
-offset 2 -- explain how offset works
-```
+### Seed Data 
 
-**wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
+The seeds for this data already exist. Look through the seed files. Note how the foreign keys match existing data. Run `knex seed:run`. 
 
-**Take a break if it's a good time**
+Start the server with `npm run server`. Hit the `api/animals` and `/api/species` to confirm that the data has been entered. 
 
-Next, we'll move to the starter project use it to learn about migrations and seeding.
+Note that the truncate portion of the seeds are missing. That's because when foreign keys are involve, it's not always so simple to drop an entire table. We can instead use a library called `knex-cleaner`. Show them the `00-cleanup` seed, which will remove all data before seeding. 
 
-## Introduce Knex Migrations
+### Foreign Key Restrictions
 
-Show the [Schema Builder section of the Knex documentation](https://knexjs.org/#Schema) and explain that we can use the methods listed to build and manage database schemas.
-
-Remove the database from `SQLite Studio` to release any possible locking of the file by the OS.
-
-Open the starter project and **delete the database**. We'll re-create it using `Knex Migrations`. Check the folder using your OS file navigator to make sure the DB is gone.
-
-Explain what a migration is.
-
-We will generate the database and the `Roles` table, here's the `schema` for it:
-
-| Column | Type         | Metadata                              |
-| ------ | ------------ | ------------------------------------- |
-| id     | integer      | Primary Key, Auto-increment, Not Null |
-| name   | varchar(128) | Unique, Not Null                      |
-
-Show that typing `npx knex` in the terminal will show a list of possible commands. There are three basic commands `init`, `migrate` and `seed`. We'll see examples of all of them.
-
-**wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
-
-## Use Knex init to Generate knexfile.js
-
-Add a folder that will contain the database and the migrations and seeding scripts, we're calling it `data` for this example.
-
-By default, `Knex Migrations` will look for the information needed to configure `knex` inside a file named `knexfile.js` that should be at the root folder of the application.
-
-To have knex generate that file automatically just type: `npx knex init`.
-
-- Open the file and show the content of it.
-- Remove the `staging` and `production` properties, leaving only the `development` key.
-- update `knexfile.js` with the following information:
+Let's test that our foreign key restriction is working properly. Comment in the entry in the `03-animals` seed file with an invalid `species_id`:
 
 ```js
-module.exports = {
-  development: {
-    client: 'sqlite3',
-    useNullAsDefault: true, // needed for sqlite
-    // create the data folder manually
-    connection: {
-      filename: './data/rolex.db3', // the name for the database file to use, adjust as needed
-    },
-    migrations: {
-      directory: './data/migrations', // the migrations folder is added to the root by default, this moves it to /data
-    },
-    seeds: {
-      directory: './data/seeds', // the seeds folder is added to the root by default, this moves it to /data
+{ animal_name: "Bellatrix", species_id: 19 }
+```
+
+When we run `knex seed:run`, there is no error. And if we hit `api/animals` we can see that bad data has gotten in. There's something extra we need in our `knexfile` to enforce foreign keys
+
+```js
+development: {
+  client: 'sqlite3',
+  useNullAsDefault: true, // needed for sqlite
+  connection: {
+    filename: './data/zoos.db3',
+  },
+  migrations: {
+    directory: './data/migrations'
+  },
+  seeds: {
+    directory: './data/seeds'
+  },
+  // add the following
+  pool: {
+    afterCreate: (conn, done) => {
+      // runs after a connection is made to the sqlite engine
+      conn.run('PRAGMA foreign_keys = ON', done); // turn on FK enforcement
     },
   },
-};
+},
 ```
 
-Note that this is the same information we used to configure knex, but now it is extracted away to it's own file.
+Try `knex seed:run` again and see it now errors out. The restriction is properly being enforced. Comment out the bad data point in seeds. 
 
-**wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
+### CASCADING DELETES
 
-Next, we'll create a migration that will create the database and add the Roles table to it.
+Example that another issue to consider with foreign keys is updating and remove data. Try removing `raccoon` from the `species` table by hitting `DELETE /api/species/8` in `postman`. 
 
-## Use Knex Migrations to Create a Table and Database (if it does not exist)
+This is not allowed, because `raccoon` is linked to the animal `rocky` which is in turn linked to an entry in the `zoo_animals` table. Sometimes we want this behavior, but other times we might want a deleted record to cascade. In other words, delete all related records.
 
-- in the terminal type: `npx knex migrate:make createRolesTable` to generate a migration.
-- open the file and note the timestamp added at the beginning of the filename to make sure migrations are run in the same order they were created.
-- explain how the `up` (changes to apply to the db schema) and `down` (how to undo the changes from `up`) functions work.
-
-Fill in the `up` and `down` functions:
+Rollback the schema with `knex migrate:rollback`. Then add the following:
 
 ```js
-// changes to be applied to the database
-exports.up = function(knex, Promise) {
-  return knex.schema.createTable('roles', function(tbl) {
-    // primary key called id, integer, auto-increment
-    tbl.increments(); // generates primary key automatically
-
-    // show the knex docs to see the different data types included
-    tbl
-      .string('name', 128) // will generate a varchar(128) by default. SQLite ignores the sizing but other DBMS will respect it.
-      .notNullable() // make it required or NOT NULL
-      .unique(); // add a unique constraint and index automatically
-
-    tbl.timestamps(true, true); // adds created_at and updated_at columns that default to current date and time
-  });
-};
-
-// undo the changes
-exports.down = function(knex, Promise) {
-  return knex.schema.dropTableIfExists('roles');
-};
+.createTable('animals', tbl => {
+  tbl.increments();
+  tbl.string('animal_name', 128);
+  // must come after species table is created
+  tbl.integer('species_id')
+    .unsigned()
+    .notNullable()
+    .references('id')
+    .inTable('species')
+    // add CASCADE HERE
+    .onDelete('CASCADE')
+    .onUpdate('CASCADE');
+})
+.createTable('zoo_animals', tbl => {
+  tbl.integer('zoo_id')
+    .unsigned()
+    .notNullable()
+    .references('id')
+    .inTable('zoos')
+    // AND HERE
+    .onDelete('CASCADE')
+    .onUpdate('CASCADE');
+  tbl.integer('animal_id')
+    .unsigned()
+    .notNullable()
+    .references('id')
+    .inTable('animals')
+    // AND HERE
+    .onDelete('CASCADE')
+    .onUpdate('CASCADE');
+  // the combination of the two keys becomes our primary key
+  // will enforce unique combinations of ids
+  tbl.primary(['zoo_id', 'animal_id']);
+});
 ```
 
-Make sure to explain that we should create a new migration for any future changes the the DB schema (adding columns, renaming columns, adding tables, removing columns, etc)
+Re-run the schema and seeds with 
 
-To apply the migration to the database (if the db does not exist it will create it when using SQLite) type: `npx knex migrate:latest`.
-
-Open the DB using `SQLite Studio` and show that the table has the structure we defined and the extra fields generated by `timestamps()`.
-
-To undo the changes from the latest migrations, use: `npx knex migrate:rollback`. Running `npx knex migrate:latest` will re-apply the latest migrations again.
-
-**wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
-
-## Add a Foreign Key using Knex Migrations
-
-Add a new migration for a 'users' table: `npx knex migrate:make createUsersTable`.
-
-Add the following content to the generated migration file:
-
-```js
-// what changes are to be applied to the database
-exports.up = function(knex, Promise) {
-  return knex.schema.createTable('users', function(tbl) {
-    // primary key called id, integer, auto-increment
-    tbl.increments();
-
-    tbl.string('name', 128).notNullable();
-
-    // Foreign Key example - we'll explain how Foreign Keys work in the Data Modeling lecture
-    tbl
-      .integer('role_id') // the field to be added to the users table
-      .unsigned() // include this because some DBMS need it
-      .references('id') // the primary key in the parent table
-      .inTable('roles') // the name of the parent table
-      .onDelete('CASCADE') // ask students to add it and we'll explain what they do in the Data Modeling lecture
-      .onUpdate('CASCADE'); // ask students to add it and we'll explain what they do in the Data Modeling lecture
-
-    tbl.timestamps(true, true);
-  });
-};
-
-// how can I undo the changes
-exports.down = function(knex, Promise) {
-  return knex.schema.dropTableIfExists('users');
-};
+```
+knex migrate:latest
+knex seed:run
 ```
 
-**wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
-
-## Knex Seeding to add Data to Tables
-
-To create a seed type: `npx knex seed:make 001-seedName`. Numbering is a good idea because `knex` will not add a timestamp to the name like migrate does. Adding numbers to the file name we can control the order in which they run.
-
-In some Relational Database Management Systems it is not possible to delete records referenced by `foreign keys`. To deal with that we'll use an npm module called `knex-cleaner`. This module can empty all tables and reset all primary keys. We just need to guarantee that it runs before any other seed.
-
-- Add `knex-cleaner` as a development dependency: `yarn add knex-cleaner --dev`.
-- Add a new seed to clean all tables: `npx knex seed:make 00-cleanup`.
-- Add the following content to the generated seed file.
-
-```js
-// ./seeds/00-cleanup.js
-const cleaner = require('knex-cleaner');
-
-exports.seed = function(knex) {
-  return cleaner.clean(knex); // cleans all tables and resets the primary keys
-};
-```
-
-- Add a new seed file for the `roles` table: `npx knex seed:make 001-roles`
-- add the following content to the generated seed file:
-
-```js
-// ./seeds/001-roles.js
-exports.seed = function(knex, Promise) {
-  // the 00-cleanup.js seed already deleted all records
-  // we just worry about seeding records in all other seeds
-  return knex('roles').insert([
-    { name: 'student' },
-    { name: 'PM' },
-    { name: 'TA' },
-  ]);
-};
-```
-
-Run the seed files by typing: `npx knex seed:run`.
-
-Run the API and test it out from Postman, all endpoints should still work, only now they are working with the new database we created using migrations and seeding.
-
-**wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
+Now once again try hitting `DELETE /api/species/8` in `postman`. It no longer fails. If we `GET /api/species` and `GET api/animals` we can see both the `raccoon` and `rocky` data points have been deleted. 
