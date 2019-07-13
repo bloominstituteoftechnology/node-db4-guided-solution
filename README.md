@@ -34,10 +34,6 @@ Introduce the project for the afternoon. If they are done early, encourage them 
 
 Review data normalization, redundancy, and anomalies in TK. 
 
-## Foreign Keys
-
-Review foreign keys in TK. You may use [SQLTryIt](https://w3schools.com/Sql/tryit.asp?filename=trysql_select_top) as a visual tool as well.
-
 ## Table Relationships
 
 Review 1-to-1, 1-to-many, and many-to-many relationships in TK.
