@@ -182,7 +182,7 @@ Explain that two columns can be a primary key, as long as the combinations are u
 
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
 
-### YOU DO (Estimated 3 minutes)
+### You do (Estimated 3 minutes)
 
 Write a `down` function.
 
@@ -246,7 +246,7 @@ development: {
 
 Try `knex seed:run` again and see it now errors out. The restriction is properly being enforced. Comment out the bad data point in seeds. 
 
-### CASCADING DELETES
+### Cascading (Optional - 10 minutes remaining)
 
 Example that another issue to consider with foreign keys is updating and remove data. Try removing `raccoon` from the `species` table by hitting `DELETE /api/species/8` in `postman`. 
 
