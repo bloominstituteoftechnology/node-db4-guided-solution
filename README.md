@@ -1,8 +1,8 @@
-# Web DB IV Guided Project Solution
+# Web DB III Guided Project Solution
 
-Guided project solution for **Web DB IV** Module.
+Guided project solution for **Web DB III** Module.
 
-Starter code is here: [Web DB IV Guided Project](https://github.com/LambdaSchool/webdb-iv-guided).
+Starter code is here: [Web DB III Guided Project](https://github.com/LambdaSchool/webdb-iii-guided).
 
 ## Prerequisites
 
@@ -11,13 +11,13 @@ Starter code is here: [Web DB IV Guided Project](https://github.com/LambdaSchool
 
 ## Starter Code
 
-The [Starter Code](https://github.com/LambdaSchool/webdb-iv-guided) for this project is configured to run the server by typing `yarn server` or `npm run server`. The server will restart automatically on changes.
+The [Starter Code](https://github.com/LambdaSchool/webdb-iii-guided) for this project is configured to run the server by typing `yarn server` or `npm run server`. The server will restart automatically on changes.
 
 ## How to Use this Repository
 
-- clone the [starter code](https://github.com/LambdaSchool/webapi-iv-guided).
+- clone the [starter code](https://github.com/LambdaSchool/webapi-iii-guided).
 - create a solution branch: `git checkout -b solution`.
-- add this repository as a remote: `git remote add solution https://github.com/LambdaSchool/webapi-iv-guided-solution`
+- add this repository as a remote: `git remote add solution https://github.com/LambdaSchool/webapi-iii-guided-solution`
 - pull from this repository's `master` branch into the `solution` branch in your local folder `git pull solution master:solution --force`.
 
 A this point you should have a `master` branch pointing to the student's repository and a `solution` branch with the latest changes added to the solution repository.
@@ -32,7 +32,7 @@ Introduce the project for the afternoon. If they are done early, encourage them 
 
 ## Data Normalization
 
-Review data normalization, redundancy, and anomalies in TK. 
+Review data normalization, redundancy, and anomalies in TK.
 
 ## Table Relationships
 
@@ -45,7 +45,7 @@ Paste the following requirements into `notes.md`:
 ```
 ### Problem
 A client has hired you to track zoo animals.
-For each animal, you must track that their name, species, 
+For each animal, you must track that their name, species,
 and all zoos in which they have resided (including zoo name and address).
 
 Determine the database tables necessary to track this information.
@@ -76,7 +76,7 @@ Break down each the design of each table in `notes.md`
 Zoos:
 - id
 - zoo_name
-- address 
+- address
 ```
 
 Mention that we could choose to create a seperate address table with a 1 to 1 relationship with zoos, but unless we had some specific reason to, that is an unnecessary step.
@@ -102,7 +102,7 @@ zoo_animals:
 - animal_id
 ```
 
-The naming convention for link tables in table1_table2plural. Mention that this type of table does not actually require its own id. We'll see why later. 
+The naming convention for link tables in table1_table2plural. Mention that this type of table does not actually require its own id. We'll see why later.
 
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
 
@@ -110,7 +110,7 @@ The naming convention for link tables in table1_table2plural. Mention that this 
 
 ## Multi Table Schemas in Knex
 
-We now want to build these tables using a knex migration. Confirm that our `knexfile` is setup properly. Then run: 
+We now want to build these tables using a knex migration. Confirm that our `knexfile` is setup properly. Then run:
 
 `knex migrate:make create-tables`
 
@@ -118,21 +118,23 @@ We can create all tables in the same knex file. Start with `zoos` and `species`
 
 ```js
 exports.up = function(knex, Promise) {
-  return knex.schema
-    .createTable('zoos', tbl => {
-      tbl.increments();
-      // two different zoos may have the same name
-      tbl.string('zoo_name', 128)
-        .notNullable();
-      tbl.string('address', 128)
-        .notNullable()
-        .unique();
-    })
-    // we can chain together createTable
-    .createTable('species', tbl => {
-      tbl.increments();
-      tbl.string('species_name', 128);
-    })
+  return (
+    knex.schema
+      .createTable('zoos', tbl => {
+        tbl.increments();
+        // two different zoos may have the same name
+        tbl.string('zoo_name', 128).notNullable();
+        tbl
+          .string('address', 128)
+          .notNullable()
+          .unique();
+      })
+      // we can chain together createTable
+      .createTable('species', tbl => {
+        tbl.increments();
+        tbl.string('species_name', 128);
+      })
+  );
 };
 ```
 
@@ -153,7 +155,7 @@ Now let's add a table with a foreign key
     .references('id')
     // this table must exist already
     .inTable('species')
-})   
+})
 ```
 
 Finally, let's add the intermediary table for our many-to-many relationship
@@ -201,15 +203,15 @@ exports.down = function(knex, Promise) {
 
 Note that tables must be dropped in reverse order.
 
-Run `knex migrate:latest` to assure there are no typos. 
+Run `knex migrate:latest` to assure there are no typos.
 
-### Seed Data 
+### Seed Data
 
-The seeds for this data already exist. Look through the seed files. Note how the foreign keys match existing data. Run `knex seed:run`. 
+The seeds for this data already exist. Look through the seed files. Note how the foreign keys match existing data. Run `knex seed:run`.
 
-Start the server with `npm run server`. Hit the `api/animals` and `/api/species` to confirm that the data has been entered. 
+Start the server with `npm run server`. Hit the `api/animals` and `/api/species` to confirm that the data has been entered.
 
-Note that the truncate portion of the seeds are missing. That's because when foreign keys are involve, it's not always so simple to drop an entire table. We can instead use a library called `knex-cleaner`. Show them the `00-cleanup` seed, which will remove all data before seeding. 
+Note that the truncate portion of the seeds are missing. That's because when foreign keys are involve, it's not always so simple to drop an entire table. We can instead use a library called `knex-cleaner`. Show them the `00-cleanup` seed, which will remove all data before seeding.
 
 ### Foreign Key Restrictions
 
@@ -244,11 +246,11 @@ development: {
 },
 ```
 
-Try `knex seed:run` again and see it now errors out. The restriction is properly being enforced. Comment out the bad data point in seeds. 
+Try `knex seed:run` again and see it now errors out. The restriction is properly being enforced. Comment out the bad data point in seeds.
 
 ### Cascading (Optional - 10 minutes remaining)
 
-Example that another issue to consider with foreign keys is updating and remove data. Try removing `raccoon` from the `species` table by hitting `DELETE /api/species/8` in `postman`. 
+Example that another issue to consider with foreign keys is updating and remove data. Try removing `raccoon` from the `species` table by hitting `DELETE /api/species/8` in `postman`.
 
 This is not allowed, because `raccoon` is linked to the animal `rocky` which is in turn linked to an entry in the `zoo_animals` table. Sometimes we want this behavior, but other times we might want a deleted record to cascade. In other words, delete all related records.
 
@@ -291,11 +293,11 @@ Rollback the schema with `knex migrate:rollback`. Then add the following:
 });
 ```
 
-Re-run the schema and seeds with 
+Re-run the schema and seeds with
 
 ```
 knex migrate:latest
 knex seed:run
 ```
 
-Now once again try hitting `DELETE /api/species/8` in `postman`. It no longer fails. If we `GET /api/species` and `GET api/animals` we can see both the `raccoon` and `rocky` data points have been deleted. 
+Now once again try hitting `DELETE /api/species/8` in `postman`. It no longer fails. If we `GET /api/species` and `GET api/animals` we can see both the `raccoon` and `rocky` data points have been deleted.
