@@ -1,4 +1,4 @@
-### Problem
+# Requirements
 
 A client has hired you to track zoo animals.
 For each animal, you must track that their name, species, and all zoos in which they have resided (including zoo name and address).
@@ -6,29 +6,33 @@ For each animal, you must track that their name, species, and all zoos in which 
 Determine the database tables necessary to track this information.
 Label any relationships between table.
 
-### Solution
+## Solution
 
 Tables: Zoos, Species, Animals
 
 Zoos <=> Animals : Many to many
 Species <=> Animals: 1 to many
 
-### Table Details
+## Table Details
 
 Zoos:
+
 - id
 - zoo_name
-- address 
+- address
 
 Species:
+
 - id
 - species_name
 
 Animals:
+
 - id
 - animal_name
 - species_id
 
 zoo_animals:
+
 - zoo_id
 - animal_id

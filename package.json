@@ -1,7 +1,7 @@
 {
-  "name": "webdb-iii-guided",
+  "name": "node-db4-guided",
   "version": "1.0.0",
-  "description": "Guided Project for Web DB III Module",
+  "description": "Guided Project for Node DB 4 Module",
   "main": "index.js",
   "scripts": {
     "server": "nodemon index.js"
@@ -10,10 +10,10 @@
   "author": "Lambda School",
   "dependencies": {
     "express": "^4.17.1",
-    "helmet": "^3.18.0",
-    "knex": "^0.17.6",
-    "knex-cleaner": "^1.1.4",
-    "sqlite3": "^4.0.8"
+    "helmet": "^3.19.0",
+    "knex": "^0.19.0",
+    "knex-cleaner": "^1.2.1",
+    "sqlite3": "^4.0.9"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
