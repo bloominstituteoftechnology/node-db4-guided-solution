@@ -2,7 +2,7 @@
 
 Guided project solution for **Node DB 4** Module.
 
-Starter code is here: [Web DB III Guided Project](https://github.com/LambdaSchool/node-db4-guided).
+Starter code is here: [Node DB 4 Guided Project](https://github.com/LambdaSchool/node-db4-guided).
 
 ## Prerequisites
 
