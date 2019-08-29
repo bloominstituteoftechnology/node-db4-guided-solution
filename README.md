@@ -40,12 +40,12 @@ Review 1-to-1, 1-to-many, and many-to-many relationships in TK.
 
 ### You Do (Estimated 5 minutes)
 
-Paste the following requirements into `notes.md`:
+Show the following requirements into `notes.md`:
 
 ```
 ### Problem
 A client has hired you to track zoo animals.
-For each animal, you must track that their name, species,
+For each individual animal, you must track that their name, species,
 and all zoos in which they have resided (including zoo name and address).
 
 Determine the database tables necessary to track this information.
