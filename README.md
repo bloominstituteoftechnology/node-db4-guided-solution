@@ -40,29 +40,29 @@ Review 1-to-1, 1-to-many, and many-to-many relationships in TK.
 
 ### You Do (Estimated 5 minutes)
 
-Show the following requirements into `notes.md`:
+Introduce the requirements from `notes.md`.
 
-```
 ### Problem
-A client has hired you to track zoo animals.
-For each individual animal, you must track that their name, species,
-and all zoos in which they have resided (including zoo name and address).
+
+A client has hired you to build an API for managing `zoos` and the `animals` kept at each `zoo`. The API will be use for `zoos` in the _United States of America_, no need to worry about addresses in other countries.
+
+For the `zoos` the client wants to record:
+
+- name.
+- address.
+
+For the `animals` the client wants to record:
+
+- name.
+- species.
+- list of all the zoos where they have resided.
 
 Determine the database tables necessary to track this information.
 Label any relationships between table.
-```
 
-Possible answer:
+Possible solution:
 
-```
-### Solution
-Tables: Zoos, Species, Animals
-
-Zoos <=> Animals : Many to many
-Species <=> Animals: 1 to many
-```
-
-Discuss why Zoos <=> Animals must be many to many, versus if the requirements had called for tracking the current location of each animal.
+<img src="images/zoosmodel.png">
 
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
 
