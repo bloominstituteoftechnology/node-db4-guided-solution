@@ -28,7 +28,7 @@ When making changes to the `master` branch, commit the changes and use `git push
 
 ## Introduce Module Challenge
 
-Introduce the project for the afternoon. If they are done early, encourage them to study tomorrow's content and follow the tutorials on TK.
+Introduce the project for the afternoon. If they are done early, they can use the extra time to continue to practice the sprint's content and build fron end for their APIs.
 
 ## Data Normalization
 
