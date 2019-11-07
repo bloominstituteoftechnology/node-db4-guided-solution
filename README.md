@@ -13,7 +13,7 @@ Starter code is here: [Node DB 4 Guided Project](https://github.com/LambdaSchool
 
 The [Starter Code](https://github.com/LambdaSchool/node-db4-guided) for this project is configured to run the server by typing `yarn server` or `npm run server`. The server will restart automatically on changes.
 
-## How to Use this Repository
+## How to Contribute
 
 - clone the [starter code](https://github.com/LambdaSchool/node-db4-guided).
 - create a solution branch: `git checkout -b solution`.
@@ -32,15 +32,15 @@ Introduce the project for the afternoon. If they are done early, they can use th
 
 ## Data Normalization
 
-Review data normalization, redundancy, and anomalies in TK.
+Review data normalization, redundancy, and anomalies in TK. Explain that we'll take a pragmatic approach to data normalization. We'll follow a process and a set of _mantras_ that will produce a _normallized enough_ model for most use cases.
 
 ## Table Relationships
 
-Review 1-to-1, 1-to-many, and many-to-many relationships in TK.
+Review 1-to-1, 1-to-many, and many-to-many relationships in TK. Don't spend too much time here, we'll see them in action when we get to the Data Modeling section below.
 
 ### You Do (Estimated 5 minutes)
 
-Introduce the requirements from `notes.md`.
+Introduce the requirements listed in `notes.md`.
 
 ### Problem
 
@@ -68,43 +68,52 @@ Possible solution:
 
 ### Schema Design
 
-Break down each the design of each table in `notes.md`
-
-```
-### Tables
-
-Zoos:
-- id
-- zoo_name
-- address
-```
+Walk through the steps necessary to arrive at the solution depicted above.
 
 Mention that we could choose to create a seperate address table with a 1 to 1 relationship with zoos, but unless we had some specific reason to, that is an unnecessary step.
-
-```
-Species:
-- id
-- species_name
-
-Animals:
-- id
-- animal_name
-- species_id
-```
 
 There are many animals for one species. In a many-to-one relationship, the foreign key goes in the "many" table. Thus `species_id`, the foreign key, will link each animal to its species.
 
 Finally, we will need to link animals and zoos. Explore why we cannot have a `zoo_id` in `animals` nor can we have a `animal_id` in `zoos`. Instead, we'll need an intermediary table
 
-```
-zoo_animals:
-- zoo_id
-- animal_id
-```
+The naming convention for link tables in table1_table2plural. Mention that this type of table does not actually require its own id, but we may opt to add one. We'll see why later.
 
-The naming convention for link tables in table1_table2plural. Mention that this type of table does not actually require its own id. We'll see why later.
+### A good data model
 
-**wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
+- captures ALL the information the system needs.
+- captures ONLY the information the system needs <--- Abstraction.
+- reflects reality (from the point of view of the system).
+- is flexible, can evolve with the system.
+- guarantees data integrity, without sacrificing performance. <-- using constraints.
+- is driven by the way we access the data.
+
+### Components
+
+- entities (nouns: zoo, animal, species), like a resource --> tables.
+- properties --> columns or fields.
+- relationships --> Foreign Keys
+
+### Workflow
+
+- identify entities.
+- identify properties.
+- identify relationships.
+
+### Relationships
+
+- one to one: rare.
+- one to many: this is it!
+- many to many: a trick!!
+
+### Mantras
+
+- every table must have a `Primary Key`.
+- work on **two or three entities at at time**.
+- _one to many_ relationship requires a `Foreign Key`.
+- the `Foreign Key` goes on the **Many** side.
+- _many to many_ requires a **third table**.
+- the third table could include other columns.
+  **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
 
 **Take a break if it's a good time**
 
