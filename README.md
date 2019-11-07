@@ -38,11 +38,13 @@ Review data normalization, redundancy, and anomalies in TK. Explain that we'll t
 
 Review 1-to-1, 1-to-many, and many-to-many relationships in TK. Don't spend too much time here, we'll see them in action when we get to the Data Modeling section below.
 
-### You Do (Estimated 5 minutes)
+**wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
+
+## Schema Design
 
 Introduce the requirements listed in `notes.md`.
 
-### Problem
+### Requirements
 
 A client has hired you to build an API for managing `zoos` and the `animals` kept at each `zoo`. The API will be use for `zoos` in the _United States of America_, no need to worry about addresses in other countries.
 
@@ -63,10 +65,6 @@ Label any relationships between table.
 Possible solution:
 
 <img src="images/zoosmodel.png">
-
-**wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
-
-### Schema Design
 
 Walk through the steps necessary to arrive at the solution depicted above.
 
