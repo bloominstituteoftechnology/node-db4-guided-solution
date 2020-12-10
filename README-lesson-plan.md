@@ -11,7 +11,7 @@ Starter code is here: [Node DB 4 Guided Project](https://github.com/LambdaSchool
 
 ## Starter Code
 
-The [Starter Code](https://github.com/LambdaSchool/node-db4-guided) for this project is configured to run the server by typing `yarn server` or `npm run server`. The server will restart automatically on changes.
+The [Starter Code](https://github.com/LambdaSchool/node-db4-guided) for this project is configured to run the server by typing `npm run server`. The server will restart automatically on changes.
 
 ## Introduce Module Challenge
 
@@ -19,11 +19,11 @@ Introduce the project for the afternoon. If they are done early, they can use th
 
 ## Data Normalization
 
-Review data normalization, redundancy, and anomalies in TK. Explain that we'll take a pragmatic approach to data normalization. We'll follow a process and a set of _mantras_ that will produce a _normallized enough_ model for most use cases.
+Review data normalization, redundancy, and anomalies in Canvas. Explain that we'll take a pragmatic approach to data normalization. We'll follow a process and a set of _mantras_ that will produce a _normallized enough_ model for most use cases.
 
 ## Table Relationships
 
-Review 1-to-1, 1-to-many, and many-to-many relationships in TK. Don't spend too much time here, we'll see them in action when we get to the Data Modeling section below.
+Review 1-to-1, 1-to-many, and many-to-many relationships in Canvas. Don't spend too much time here, we'll see them in action when we get to the Data Modeling section below.
 
 **wait for students to catch up, use a `yes/no` poll to let students tell you when they are done**
 
