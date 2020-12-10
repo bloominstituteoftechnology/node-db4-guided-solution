@@ -19,5 +19,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/LambdaSchool/node-db4-guided-solution.git"
-  }
+  },
+  "license": "ISC"
 }
