@@ -11,7 +11,7 @@ Starter code is here: [Node DB 4 Guided Project](https://github.com/LambdaSchool
 
 ## Starter Code
 
-The [Starter Code](https://github.com/LambdaSchool/node-db4-guided) for this project is configured to run the server by typing `npm run server`. The server will restart automatically on changes. It can save some time to create "migrate", "rollback" and "seed" scripts inside `package.json`.
+The [Starter Code](https://github.com/LambdaSchool/node-db4-guided) for this project is configured to run the server by typing `npm run server`. The server will restart automatically on changes. It can save some time to create "migrate", "rollback" and "seed" scripts inside `package.json`. It's a very good idea to install Eslint in the project by running `npx eslint --init`.
 
 ## Introduce Module Challenge
 
