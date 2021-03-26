@@ -224,7 +224,7 @@ development: {
   seeds: {
     directory: './data/seeds'
   },
-  // add the following
+  // ADD THE FOLLOWING <==========================
   pool: {
     afterCreate: (conn, done) => {
       // runs after a connection is made to the sqlite engine
@@ -280,7 +280,7 @@ Rollback the schema with `knex migrate:rollback`. Then add the following:
 
 Re-run the schema and seeds with
 
-```
+```bash
 knex migrate:latest
 knex seed:run
 ```
