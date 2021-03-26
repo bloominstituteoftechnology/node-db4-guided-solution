@@ -11,7 +11,7 @@ Starter code is here: [Node DB 4 Guided Project](https://github.com/LambdaSchool
 
 ## Starter Code
 
-The [Starter Code](https://github.com/LambdaSchool/node-db4-guided) for this project is configured to run the server by typing `npm run server`. The server will restart automatically on changes.
+The [Starter Code](https://github.com/LambdaSchool/node-db4-guided) for this project is configured to run the server by typing `npm run server`. The server will restart automatically on changes. It can save some time to create "migrate", "rollback" and "seed" scripts inside `package.json`.
 
 ## Introduce Module Challenge
 
@@ -59,7 +59,7 @@ Mention that we could choose to create a seperate address table with a 1 to 1 re
 
 There are many animals for one species. In a many-to-one relationship, the foreign key goes in the "many" table. Thus `species_id`, the foreign key, will link each animal to its species.
 
-Finally, we will need to link animals and zoos. Explore why we cannot have a `zoo_id` in `animals` nor can we have a `animal_id` in `zoos`. Instead, we'll need an intermediary table
+Finally, we will need to link animals and zoos. Explore why we cannot have a `zoo_id` in `animals` nor can we have a `animal_id` in `zoos`. Instead, we'll need an intermediary table.
 
 The naming convention for link tables in table1_table2plural. Mention that this type of table does not actually require its own id, but we may opt to add one. We'll see why later.
 
@@ -111,44 +111,39 @@ We now want to build these tables using a knex migration. Confirm that our `knex
 We can create all tables in the same knex file. Start with `zoos` and `species`
 
 ```js
-exports.up = function(knex, Promise) {
-  return (
-    knex.schema
-      .createTable('zoos', tbl => {
-        tbl.increments();
-        // two different zoos may have the same name
-        tbl.string('zoo_name', 128).notNullable();
-        tbl
-          .string('address', 128)
-          .notNullable()
-          .unique();
-      })
-      // we can chain together createTable
-      .createTable('species', tbl => {
-        tbl.increments();
-        tbl.string('species_name', 128);
-      })
-  );
+exports.up = function (knex) {
+  return knex.schema
+    .createTable('zoos', tbl => {
+      // it's better if column names are unique
+      // for the entire database
+      tbl.increments('zoo_id');
+      // two different zoos may have the same name
+      tbl.string('zoo_name', 128)
+        .notNullable();
+      tbl.string('address', 128)
+        .notNullable()
+        .unique();
+    })
+    // we can chain together createTable
+    .createTable('species', tbl => {
+      tbl.increments('species_id');
+      tbl.string('species_name', 128);
+    })
 };
 ```
 
 Now let's add a table with a foreign key
 
 ```js
-.createTable('species', tbl => {
-  tbl.increments();
-  tbl.string('species_name', 128);
-})
 .createTable('animals', tbl => {
-  tbl.increments();
+  tbl.increments('animal_id');
   tbl.string('animal_name', 128);
+  // must come after species table is created
   tbl.integer('species_id')
-    // forces integer to be positive
-    .unsigned()
+    .unsigned() // forces integer to be positive
     .notNullable()
-    .references('id')
-    // this table must exist already
-    .inTable('species')
+    .references('species_id')
+    .inTable('species'); // this table must exist already
 })
 ```
 
@@ -159,15 +154,14 @@ Finally, let's add the intermediary table for our many-to-many relationship
   tbl.integer('zoo_id')
     .unsigned()
     .notNullable()
-    .references('id')
-    // this table must exist already
-    .inTable('zoos')
+    .references('zoo_id')
+    .inTable('zoos'); // this table must exist already
   tbl.integer('animal_id')
     .unsigned()
     .notNullable()
-    .references('id')
-    // this table must exist already
-    .inTable('animals')
+    .references('animal_id')
+    .inTable('animals'); // this table must exist already
+  // THIS IS HOW WE WOULD MAKE A COMPOSITE PRIMARY KEY
   // the combination of the two keys becomes our primary key
   // will enforce unique combinations of ids
   tbl.primary(['zoo_id', 'animal_id']);
@@ -252,15 +246,14 @@ Rollback the schema with `knex migrate:rollback`. Then add the following:
 
 ```js
 .createTable('animals', tbl => {
-  tbl.increments();
+  tbl.increments('animal_id');
   tbl.string('animal_name', 128);
-  // must come after species table is created
   tbl.integer('species_id')
     .unsigned()
     .notNullable()
-    .references('id')
+    .references('species_id')
     .inTable('species')
-    // add CASCADE HERE
+    // ADD CASCADE HERE <======================
     .onDelete('CASCADE')
     .onUpdate('CASCADE');
 })
@@ -268,21 +261,19 @@ Rollback the schema with `knex migrate:rollback`. Then add the following:
   tbl.integer('zoo_id')
     .unsigned()
     .notNullable()
-    .references('id')
+    .references('zoo_id')
     .inTable('zoos')
-    // AND HERE
+    // ADD CASCADE HERE <======================
     .onDelete('CASCADE')
     .onUpdate('CASCADE');
   tbl.integer('animal_id')
     .unsigned()
     .notNullable()
-    .references('id')
+    .references('animal_id')
     .inTable('animals')
-    // AND HERE
+    // ADD CASCADE HERE <======================
     .onDelete('CASCADE')
     .onUpdate('CASCADE');
-  // the combination of the two keys becomes our primary key
-  // will enforce unique combinations of ids
   tbl.primary(['zoo_id', 'animal_id']);
 });
 ```
