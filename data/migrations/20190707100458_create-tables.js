@@ -26,8 +26,8 @@ exports.up = function (knex) {
         .notNullable()
         .references('species_id')
         .inTable('species')
-        .onDelete('CASCADE')
-        .onUpdate('CASCADE');
+        .onDelete('RESTRICT')
+        .onUpdate('RESTRICT');
     })
     .createTable('zoo_animals', tbl => {
       tbl.integer('zoo_id')
@@ -35,15 +35,15 @@ exports.up = function (knex) {
         .notNullable()
         .references('zoo_id')
         .inTable('zoos')
-        .onDelete('CASCADE')
-        .onUpdate('CASCADE');
+        .onDelete('RESTRICT')
+        .onUpdate('RESTRICT');
       tbl.integer('animal_id')
         .unsigned()
         .notNullable()
         .references('animal_id')
         .inTable('animals')
-        .onDelete('CASCADE')
-        .onUpdate('CASCADE');
+        .onDelete('RESTRICT')
+        .onUpdate('RESTRICT');
       // THIS IS HOW WE WOULD MAKE A COMPOSITE PRIMARY KEY
       // the combination of the two keys becomes our primary key
       // will enforce unique combinations of ids
